@@ -67,6 +67,7 @@ public class PreparedStatementHandler extends BaseStatementHandler {
 
   @Override
   protected Statement instantiateStatement(Connection connection) throws SQLException {
+	//被执行的sql  
     String sql = boundSql.getSql();
     if (mappedStatement.getKeyGenerator() instanceof Jdbc3KeyGenerator) {
       String[] keyColumnNames = mappedStatement.getKeyColumns();
@@ -78,6 +79,7 @@ public class PreparedStatementHandler extends BaseStatementHandler {
     } else if (mappedStatement.getResultSetType() != null) {
       return connection.prepareStatement(sql, mappedStatement.getResultSetType().getValue(), ResultSet.CONCUR_READ_ONLY);
     } else {
+    	 //直接使用jdbc的方式获取了一个PreparedStatement对象  
       return connection.prepareStatement(sql);
     }
   }

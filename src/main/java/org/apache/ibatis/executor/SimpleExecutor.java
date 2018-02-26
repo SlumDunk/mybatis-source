@@ -44,8 +44,11 @@ public class SimpleExecutor extends BaseExecutor {
     Statement stmt = null;
     try {
       Configuration configuration = ms.getConfiguration();
+      //生成一个StatementHandler
       StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, RowBounds.DEFAULT, null, null);
+      //执行之前的准备
       stmt = prepareStatement(handler, ms.getStatementLog());
+      //执行sql 
       return handler.update(stmt);
     } finally {
       closeStatement(stmt);
@@ -75,7 +78,9 @@ public class SimpleExecutor extends BaseExecutor {
 
   private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
     Statement stmt;
+    //获取一个连接
     Connection connection = getConnection(statementLog);
+    //由StatementHandler从connection获取一个StatementHandler  
     stmt = handler.prepare(connection);
     //对创建的Statement对象设置参数，即设置SQL 语句中 ? 设置为指定的参数
     handler.parameterize(stmt);

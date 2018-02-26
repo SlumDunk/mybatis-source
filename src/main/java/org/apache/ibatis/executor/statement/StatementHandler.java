@@ -35,19 +35,43 @@ import org.apache.ibatis.session.ResultHandler;
  * @author liuzhongda
  */
 public interface StatementHandler {
-
+	/**
+	 * 从连接中获取一个Statement 
+	 * @param connection
+	 * @return
+	 * @throws SQLException
+	 */
   Statement prepare(Connection connection)
       throws SQLException;
-
+  /**
+   * 设置statement执行里所需的参数
+   * @param statement
+   * @throws SQLException
+   */
   void parameterize(Statement statement)
       throws SQLException;
-
+  /**
+   * 批量
+   * @param statement
+   * @throws SQLException
+   */
   void batch(Statement statement)
       throws SQLException;
-
+  /**
+   * 更新：update/insert/delete语句  
+   * @param statement
+   * @return
+   * @throws SQLException
+   */
   int update(Statement statement)
       throws SQLException;
-
+  /**
+   * 执行查询 
+   * @param statement
+   * @param resultHandler
+   * @return
+   * @throws SQLException
+   */
   <E> List<E> query(Statement statement, ResultHandler resultHandler)
       throws SQLException;
 

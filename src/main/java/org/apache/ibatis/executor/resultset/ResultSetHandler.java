@@ -25,7 +25,12 @@ import java.util.List;
  * @author liuzhongda
  */
 public interface ResultSetHandler {
-
+	/**
+	 * 转换结果集
+	 * @param stmt
+	 * @return
+	 * @throws SQLException
+	 */
   <E> List<E> handleResultSets(Statement stmt) throws SQLException;
 
   void handleOutputParameters(CallableStatement cs) throws SQLException;

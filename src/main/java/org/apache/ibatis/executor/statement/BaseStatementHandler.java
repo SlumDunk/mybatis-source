@@ -41,7 +41,13 @@ public abstract class BaseStatementHandler implements StatementHandler {
   protected final Configuration configuration;
   protected final ObjectFactory objectFactory;
   protected final TypeHandlerRegistry typeHandlerRegistry;
+  /**
+   * 处理结果的handler
+   */
   protected final ResultSetHandler resultSetHandler;
+  /**
+   * 设置参数的Handler
+   */
   protected final ParameterHandler parameterHandler;
 
   protected final Executor executor;
@@ -85,8 +91,11 @@ public abstract class BaseStatementHandler implements StatementHandler {
     ErrorContext.instance().sql(boundSql.getSql());
     Statement statement = null;
     try {
+    	  //这个方法是抽象的，由子类实现  
       statement = instantiateStatement(connection);
+      //设置执行的超时时间
       setStatementTimeout(statement);
+      //fetchSize，对大的结果集才有明显的效果 
       setFetchSize(statement);
       return statement;
     } catch (SQLException e) {

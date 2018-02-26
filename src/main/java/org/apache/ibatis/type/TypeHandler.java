@@ -25,13 +25,38 @@ import java.sql.SQLException;
  * @author liuzhongda
  */
 public interface TypeHandler<T> {
-
+	/**
+	 * 设置参数
+	 * @param ps
+	 * @param i
+	 * @param parameter
+	 * @param jdbcType
+	 * @throws SQLException
+	 */
   void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
-
+  /**
+   * 取数据
+   * @param rs
+   * @param columnName
+   * @return
+   * @throws SQLException
+   */
   T getResult(ResultSet rs, String columnName) throws SQLException;
-
+  /**
+   * 取数据
+   * @param rs
+   * @param columnIndex
+   * @return
+   * @throws SQLException
+   */
   T getResult(ResultSet rs, int columnIndex) throws SQLException;
-
+  /**
+   * 取数据
+   * @param cs
+   * @param columnIndex
+   * @return
+   * @throws SQLException
+   */
   T getResult(CallableStatement cs, int columnIndex) throws SQLException;
 
 }
