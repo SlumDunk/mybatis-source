@@ -73,13 +73,17 @@ public class XMLStatementBuilder extends BaseBuilder {
 
     Class<?> resultTypeClass = resolveClass(resultType);
     String resultSetType = context.getStringAttribute("resultSetType");
+    //Statement的类型，对应jdbc里的三个类型:Statement、PreparedStatement、CallableStatement，默认使用PreparedStatement  
     StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
+    //这个也是跟jdbc里相对应的，一般采用默认即可  
     ResultSetType resultSetTypeEnum = resolveResultSetType(resultSetType);
-
+    //Sql的类型，select/update/insert/delete 
     String nodeName = context.getNode().getNodeName();
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+    //是否刷新缓存
     boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
+    //是否使用缓存
     boolean useCache = context.getBooleanAttribute("useCache", isSelect);
     boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
@@ -91,6 +95,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     processSelectKeyNodes(id, parameterTypeClass, langDriver);
     
     // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
+    //生成sqlSource对象
     SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
     String resultSets = context.getStringAttribute("resultSets");
     String keyProperty = context.getStringAttribute("keyProperty");
@@ -105,7 +110,7 @@ public class XMLStatementBuilder extends BaseBuilder {
           configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType))
           ? new Jdbc3KeyGenerator() : new NoKeyGenerator();
     }
-
+    //生成MappedStatement对象，并加到Configuration中  
     builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
         fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass,
         resultSetTypeEnum, flushCache, useCache, resultOrdered, 

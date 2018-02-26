@@ -90,14 +90,17 @@ public class CacheBuilder {
 
   public Cache build() {
     setDefaultImplementations();
+    //生成基本的Cache实现  
     Cache cache = newBaseCacheInstance(implementation, id);
     setCacheProperties(cache);
     // issue #352, do not apply decorators to custom caches
     if (PerpetualCache.class.equals(cache.getClass())) {
       for (Class<? extends Cache> decorator : decorators) {
+    	  	//使策略生效  
         cache = newCacheDecoratorInstance(decorator, cache);
         setCacheProperties(cache);
       }
+      //为cache加上一些指定的额外的服务，如、日志及线程安全  
       cache = setStandardDecorators(cache);
     } else if (!LoggingCache.class.isAssignableFrom(cache.getClass())) {
       cache = new LoggingCache(cache);
@@ -118,16 +121,20 @@ public class CacheBuilder {
     try {
       MetaObject metaCache = SystemMetaObject.forObject(cache);
       if (size != null && metaCache.hasSetter("size")) {
+    	  	//设置缓存大小
         metaCache.setValue("size", size);
       }
       if (clearInterval != null) {
+    	  	//增加定时清理功能
         cache = new ScheduledCache(cache);
         ((ScheduledCache) cache).setClearInterval(clearInterval);
       }
       if (readWrite) {
         cache = new SerializedCache(cache);
       }
+      //增加日志功能
       cache = new LoggingCache(cache);
+      //实现线程安全，看了SynchronizedCache的源代码之后
       cache = new SynchronizedCache(cache);
       if (blocking) {
         cache = new BlockingCache(cache);

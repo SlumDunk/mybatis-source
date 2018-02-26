@@ -48,13 +48,15 @@ public class LruCache implements Cache {
   }
 
   public void setSize(final int size) {
+	//注意：第三个参数为true，LinkedHashMap会以访问顺序排序，最近使用的排在最前面  
     keyMap = new LinkedHashMap<Object, Object>(size, .75F, true) {
       private static final long serialVersionUID = 4267176411845948333L;
 
-      
+      //当put()方法被调用里，这个方法会触发，返回true，eldest将会被删除  
       protected boolean removeEldestEntry(Map.Entry<Object, Object> eldest) {
         boolean tooBig = size() > size;
         if (tooBig) {
+        	  //保证被删除的key,下面的cycleKeyList方法有用  
           eldestKey = eldest.getKey();
         }
         return tooBig;
@@ -62,7 +64,9 @@ public class LruCache implements Cache {
     };
   }
 
-  
+  /**
+   * 一个新的key加入时，需要检查是否要把旧的删除 
+   */
   public void putObject(Object key, Object value) {
     delegate.putObject(key, value);
     cycleKeyList(key);
@@ -91,8 +95,10 @@ public class LruCache implements Cache {
   }
 
   private void cycleKeyList(Object key) {
+	//触发重排序
     keyMap.put(key, key);
     if (eldestKey != null) {
+    	  //删除最旧的那个key 
       delegate.removeObject(eldestKey);
       eldestKey = null;
     }

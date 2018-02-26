@@ -157,6 +157,7 @@ public class XMLConfigBuilder extends BaseBuilder {
             if (alias == null) {
               typeAliasRegistry.registerAlias(clazz);
             } else {
+            	  //加载到别名注册列表中去
               typeAliasRegistry.registerAlias(alias, clazz);
             }
           } catch (ClassNotFoundException e) {
@@ -181,10 +182,15 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void objectFactoryElement(XNode context) throws Exception {
     if (context != null) {
+    	  //从配置中读取类名
       String type = context.getStringAttribute("type");
+      //从配置中读取子节点
       Properties properties = context.getChildrenAsProperties();
+      //根据类名创建对象
       ObjectFactory factory = (ObjectFactory) resolveClass(type).newInstance();
+      //设置对象属性
       factory.setProperties(properties);
+      //加入到configuration
       configuration.setObjectFactory(factory);
     }
   }
@@ -207,15 +213,19 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void propertiesElement(XNode context) throws Exception {
     if (context != null) {
+    	  //先加载properties节点属性
       Properties defaults = context.getChildrenAsProperties();
       String resource = context.getStringAttribute("resource");
       String url = context.getStringAttribute("url");
+      //不能同时设置resource属性和url属性
       if (resource != null && url != null) {
         throw new BuilderException("The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.");
       }
       if (resource != null) {
+    	  	//会覆盖子节点的配置
         defaults.putAll(Resources.getResourceAsProperties(resource));
       } else if (url != null) {
+    	  	//会覆盖子节点的配置
         defaults.putAll(Resources.getUrlAsProperties(url));
       }
       Properties vars = configuration.getVariables();
@@ -223,6 +233,7 @@ public class XMLConfigBuilder extends BaseBuilder {
         defaults.putAll(vars);
       }
       parser.setVariables(defaults);
+      //设置到变量列表中去
       configuration.setVariables(defaults);
     }
   }
@@ -391,12 +402,14 @@ public class XMLConfigBuilder extends BaseBuilder {
           if (resource != null && url == null && mapperClass == null) {
             ErrorContext.instance().resource(resource);
             InputStream inputStream = Resources.getResourceAsStream(resource);
+            //由XMLMapperBuilder对象解析加载
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
             mapperParser.parse();
           //3.<mapper url="file:///var/mappers/AuthorMapper.xml"/> Using url fully qualified paths
           } else if (resource == null && url != null && mapperClass == null) {
             ErrorContext.instance().resource(url);
             InputStream inputStream = Resources.getUrlAsStream(url);
+            //由XMLMapperBuilder对象解析加载
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());
             mapperParser.parse();
             //4.<mapper class="org.mybatis.builder.AuthorMapper"/> Using mapper interface classes

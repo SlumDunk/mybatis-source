@@ -110,10 +110,12 @@ public class MapperBuilderAssistant extends BaseBuilder {
     }
     try {
       unresolvedCacheRef = true;
+      //获取加一个命名空间的缓存
       Cache cache = configuration.getCache(namespace);
       if (cache == null) {
         throw new IncompleteElementException("No cache for namespace '" + namespace + "' could be found.");
       }
+      //设置当前命名空间的缓存，在之后的解析select/update/insert/delete节点设置缓存里使用currentCache 
       currentCache = cache;
       unresolvedCacheRef = false;
       return cache;
@@ -131,16 +133,19 @@ public class MapperBuilderAssistant extends BaseBuilder {
       Properties props) {
     typeClass = valueOrDefault(typeClass, PerpetualCache.class);
     evictionClass = valueOrDefault(evictionClass, LruCache.class);
+    //交由Builder处理,命名空间作为cache的id
     Cache cache = new CacheBuilder(currentNamespace)
         .implementation(typeClass)
-        .addDecorator(evictionClass)
+        .addDecorator(evictionClass)//这里的evictionClass也是一个Cache,设计模型中的装饰模式  
         .clearInterval(flushInterval)
         .size(size)
         .readWrite(readWrite)
         .blocking(blocking)
         .properties(props)
         .build();
+    //将cache加入configuration中  
     configuration.addCache(cache);
+    //设置当前命名空间的缓存，在之后的解析select/update/insert/delete节点设置缓存里使用currentCache 
     currentCache = cache;
     return cache;
   }
@@ -186,9 +191,10 @@ public class MapperBuilderAssistant extends BaseBuilder {
       Boolean autoMapping) {
     id = applyCurrentNamespace(id, false);
     extend = applyCurrentNamespace(extend, true);
-
+    //交由ResultMap.Builder来创建ResultMap对象
     ResultMap.Builder resultMapBuilder = new ResultMap.Builder(configuration, id, type, resultMappings, autoMapping);
     if (extend != null) {
+    	  //如果继承了其他resultMap，而且父resultMap未加载，报错 
       if (!configuration.hasResultMap(extend)) {
         throw new IncompleteElementException("Could not find a parent resultmap with id '" + extend + "'");
       }
@@ -214,7 +220,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
       resultMappings.addAll(extendedResultMappings);
     }
     resultMapBuilder.discriminator(discriminator);
+    //生成resultMap对象
     ResultMap resultMap = resultMapBuilder.build();
+    //添加到configuration中
     configuration.addResultMap(resultMap);
     return resultMap;
   }

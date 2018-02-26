@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.slamdunk.user">
+	<resultMap type="com.github.slamdunk.vo.UserVO" id="detailUserResultMap">
+		<constructor>
+			<idArg column="user_id" javaType="String"/>
+			<arg column="user_name"/>
+		</constructor>
+		
+		<result property="password" column="user_pwd" />
+		<result property="type" column="user_type" javaType="com.github.slamdunk.enum.UserType" typeHandler="com.github.slamdunk.handler.UserTypeHandler"/>
+		<result property="svcnum" column="svc_num" />
+		
+		<association property="cust" javaType="com.github.slamdunk.vo.CustVO">
+			<id property="id" column="cust_id"/>
+			<result property="custname" column="cust_name"/>
+			<result property="certNo" column="cert_no"/>
+		</association>
+		
+		<collection property="accts" ofType="com.github.slamdunk.vo.AcctVO">
+			<id property="id" column="acct_id" />
+			<result property="payName" column="pay_name"/>
+			<result property="bankNo" column="bank_no"/>
+		</collection>
+	
+	</resultMap>
+	
+	
+	<select id="selectUserDetail" resultMap="detailUserResultMap">
+		<![CDATA[
+			select user_id,user_name,user_type,cust_id from user a where a.user_id=#{userId}
+		]]>
+	</select>
+	
+
+</mapper>

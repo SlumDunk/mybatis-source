@@ -49,12 +49,17 @@ public class XMLScriptBuilder extends BaseBuilder {
   }
 
   public SqlSource parseScriptNode() {
+	//将一个sql内容解析成多个SqlNode   
     List<SqlNode> contents = parseDynamicTags(context);
+    //将多个SqlNode组合一个SqlNode
     MixedSqlNode rootSqlNode = new MixedSqlNode(contents);
     SqlSource sqlSource = null;
+    //判断sql是否是动态的 
     if (isDynamic) {
+    	  //生成动态的SqlSource
       sqlSource = new DynamicSqlSource(configuration, rootSqlNode);
     } else {
+    	  //生成静态的SqlSource
       sqlSource = new RawSqlSource(configuration, rootSqlNode, parameterType);
     }
     return sqlSource;
@@ -66,8 +71,11 @@ public class XMLScriptBuilder extends BaseBuilder {
     for (int i = 0; i < children.getLength(); i++) {
       XNode child = node.newXNode(children.item(i));
       if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE || child.getNode().getNodeType() == Node.TEXT_NODE) {
-        String data = child.getStringBody("");
+        //如果这个node只包含文本
+    	    String data = child.getStringBody("");
+    	    //生成一个TextSqlNode
         TextSqlNode textSqlNode = new TextSqlNode(data);
+        //判断是否是动态的,如果文本里包含占位符，如#{username}或{table_name},isDynamic()方法就会返回true  
         if (textSqlNode.isDynamic()) {
           contents.add(textSqlNode);
           isDynamic = true;
@@ -75,6 +83,7 @@ public class XMLScriptBuilder extends BaseBuilder {
           contents.add(new StaticTextSqlNode(data));
         }
       } else if (child.getNode().getNodeType() == Node.ELEMENT_NODE) { // issue #628
+    	  	//如果是有xml标签的Node,交由Handler处理，同时被认为是动态的 
         String nodeName = child.getNode().getNodeName();
         NodeHandler handler = nodeHandlers(nodeName);
         if (handler == null) {
@@ -88,6 +97,7 @@ public class XMLScriptBuilder extends BaseBuilder {
   }
 
   NodeHandler nodeHandlers(String nodeName) {
+	//mybatis3动态sql支持的配置  
     Map<String, NodeHandler> map = new HashMap<String, NodeHandler>();
     map.put("trim", new TrimHandler());
     map.put("where", new WhereHandler());

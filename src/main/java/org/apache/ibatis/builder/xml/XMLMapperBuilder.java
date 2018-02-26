@@ -90,6 +90,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   public void parse() {
     if (!configuration.isResourceLoaded(resource)) {
+    	  //真正解析
       configurationElement(parser.evalNode("/mapper"));
       configuration.addLoadedResource(resource);
       bindMapperForNamespace();
@@ -111,14 +112,20 @@ public class XMLMapperBuilder extends BaseBuilder {
   private void configurationElement(XNode context) {
     try {
       String namespace = context.getStringAttribute("namespace");
+      //必须定义mapper元素的命名空间
       if (namespace == null || namespace.equals("")) {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
       builderAssistant.setCurrentNamespace(namespace);
+      //缓存配置
       cacheRefElement(context.evalNode("cache-ref"));
+      //缓存配置
       cacheElement(context.evalNode("cache"));
+      //解析parameterMapper节点，不推荐
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+      //解析resultMap节点
       resultMapElements(context.evalNodes("/mapper/resultMap"));
+      //解析sql节点
       sqlElement(context.evalNodes("/mapper/sql"));
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
@@ -135,8 +142,10 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
     for (XNode context : list) {
+    	  //一个select/update/insert/delete元素创建一个XMLStatementBuilder对象 
       final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
       try {
+    	  	//将元素解析成MappedStatemenet对象，并加入到Configuration中去  
         statementParser.parseStatementNode();
       } catch (IncompleteElementException e) {
         configuration.addIncompleteStatement(statementParser);
@@ -191,9 +200,11 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void cacheRefElement(XNode context) {
     if (context != null) {
+    	  //向Configuration注册一个缓存引用
       configuration.addCacheRef(builderAssistant.getCurrentNamespace(), context.getStringAttribute("namespace"));
       CacheRefResolver cacheRefResolver = new CacheRefResolver(builderAssistant, context.getStringAttribute("namespace"));
       try {
+    	  	//获取另一个命名空间的缓存
         cacheRefResolver.resolveCacheRef();
       } catch (IncompleteElementException e) {
         configuration.addIncompleteCacheRef(cacheRefResolver);
@@ -211,6 +222,7 @@ public class XMLMapperBuilder extends BaseBuilder {
    */
   private void cacheElement(XNode context) throws Exception {
     if (context != null) {
+    	  //缓存类型，默认是PERPETUAL,为永久的
       String type = context.getStringAttribute("type", "PERPETUAL");
       Class<? extends Cache> typeClass = typeAliasRegistry.resolveAlias(type);
       //是缓存的淘汰算法，可选值有"LRU"、"FIFO"、"SOFT"、"WEAK"，缺省值是LRU
@@ -225,6 +237,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       boolean readWrite = !context.getBooleanAttribute("readOnly", false);
       boolean blocking = context.getBooleanAttribute("blocking", false);
       Properties props = context.getChildrenAsProperties();
+      //构建一个Cache对象，并加入Configuration
       builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);
     }
   }
@@ -272,34 +285,42 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings) throws Exception {
     ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
+    //id,对应ResultMap.id，内映射没有ID，生成默认ID
     String id = resultMapNode.getStringAttribute("id",
         resultMapNode.getValueBasedIdentifier());
+    //type,对应ResultMap.Type,通过多个属性进行配置
     String type = resultMapNode.getStringAttribute("type",
         resultMapNode.getStringAttribute("ofType",
             resultMapNode.getStringAttribute("resultType",
                 resultMapNode.getStringAttribute("javaType"))));
     String extend = resultMapNode.getStringAttribute("extends");
+    //是否自动映射
     Boolean autoMapping = resultMapNode.getBooleanAttribute("autoMapping");
+    //将type解析成class,可以是别名，也可以是全限定名
     Class<?> typeClass = resolveClass(type);
     Discriminator discriminator = null;
+    //这个resultMapping对应ResultMap.resultMappings
     List<ResultMapping> resultMappings = new ArrayList<ResultMapping>();
     resultMappings.addAll(additionalResultMappings);
     List<XNode> resultChildren = resultMapNode.getChildren();
-    for (XNode resultChild : resultChildren) {
-      if ("constructor".equals(resultChild.getName())) {
+    for (XNode resultChild : resultChildren) {//解析子节点
+      if ("constructor".equals(resultChild.getName())) {//解析constructor节点
         processConstructorElement(resultChild, typeClass, resultMappings);
-      } else if ("discriminator".equals(resultChild.getName())) {
+      } else if ("discriminator".equals(resultChild.getName())) {//解析discriminator节点   
         discriminator = processDiscriminatorElement(resultChild, typeClass, resultMappings);
       } else {
         List<ResultFlag> flags = new ArrayList<ResultFlag>();
         if ("id".equals(resultChild.getName())) {
           flags.add(ResultFlag.ID);
         }
+        //解析其他节点,主要有result、association及collection  
+        //在这里可以说明一个result、association及collection都会被解析成一个resultMapping对象，即使他们有很多子元素  
         resultMappings.add(buildResultMappingFromContext(resultChild, typeClass, flags));
       }
     }
     ResultMapResolver resultMapResolver = new ResultMapResolver(builderAssistant, id, typeClass, extend, discriminator, resultMappings, autoMapping);
     try {
+    	  //得到resultMappings后，生成ResultMap并加入到Configuration中 
       return resultMapResolver.resolve();
     } catch (IncompleteElementException  e) {
       configuration.addIncompleteResultMap(resultMapResolver);
@@ -309,12 +330,17 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void processConstructorElement(XNode resultChild, Class<?> resultType, List<ResultMapping> resultMappings) throws Exception {
     List<XNode> argChildren = resultChild.getChildren();
+    //遍历子节点
     for (XNode argChild : argChildren) {
       List<ResultFlag> flags = new ArrayList<ResultFlag>();
+      //标识为ResultFlag.CONSTRUCTOR
       flags.add(ResultFlag.CONSTRUCTOR);
       if ("idArg".equals(argChild.getName())) {
+    	  	//标识为一个ID属性
         flags.add(ResultFlag.ID);
       }
+      //创建一个ResultMapping对象，并加入resultMappings  
+      //这里说明了，constructor下有多个几子节点，就会产生多少个resultMapping对象 
       resultMappings.add(buildResultMappingFromContext(argChild, resultType, flags));
     }
   }
@@ -381,6 +407,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     String javaType = context.getStringAttribute("javaType");
     String jdbcType = context.getStringAttribute("jdbcType");
     String nestedSelect = context.getStringAttribute("select");
+    //一个resultMapping内部可以内嵌一个resultMap，即内部映射
     String nestedResultMap = context.getStringAttribute("resultMap",
         processNestedResultMappings(context, Collections.<ResultMapping> emptyList()));
     String notNullColumn = context.getStringAttribute("notNullColumn");
@@ -396,11 +423,20 @@ public class XMLMapperBuilder extends BaseBuilder {
     return builderAssistant.buildResultMapping(resultType, property, column, javaTypeClass, jdbcTypeEnum, nestedSelect, nestedResultMap, notNullColumn, columnPrefix, typeHandlerClass, flags, resulSet, foreignColumn, lazy);
   }
   
+  /**
+   * 生成一个内部的ResultMap对象，并加到configuration中
+   * @param context
+   * @param resultMappings
+   * @return
+   * @throws Exception
+   */
   private String processNestedResultMappings(XNode context, List<ResultMapping> resultMappings) throws Exception {
+	////只有association, collection, case节点才会生成内部映射，其他不生成，返回null    
     if ("association".equals(context.getName())
         || "collection".equals(context.getName())
         || "case".equals(context.getName())) {
       if (context.getStringAttribute("select") == null) {
+    	    ////这里类似一个递归调用，需要注意内部映射的ID是Mybatis自动生成的，不是在配置文件里读取的 
         ResultMap resultMap = resultMapElement(context, resultMappings);
         return resultMap.getId();
       }

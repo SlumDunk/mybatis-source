@@ -816,14 +816,19 @@ public class Configuration {
 
     @SuppressWarnings("unchecked")
     public V put(String key, V value) {
+    	  //如果已经存在key,抛出异常
       if (containsKey(key)) {
         throw new IllegalArgumentException(name + " already contains value for " + key);
       }
+      //key中是否存在".",存在的话获取简称
       if (key.contains(".")) {
         final String shortKey = getShortName(key);
+        //判断shortKey是否已经存在
         if (super.get(shortKey) == null) {
+        	  //如果不存在，直接设置
           super.put(shortKey, value);
         } else {
+        	  //如果已经存在，设置一个特殊对象
           super.put(shortKey, (V) new Ambiguity(shortKey));
         }
       }
@@ -835,6 +840,7 @@ public class Configuration {
       if (value == null) {
         throw new IllegalArgumentException(name + " does not contain value for " + key);
       }
+      //如果为特殊对象Ambiguity,同一个shortName有多个命名空间使用，所以不允许用shortName方法，必须加上命名空间访问
       if (value instanceof Ambiguity) {
         throw new IllegalArgumentException(((Ambiguity) value).getSubject() + " is ambiguous in " + name
             + " (try using the full name including the namespace, or rename one of the entries)");
