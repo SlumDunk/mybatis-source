@@ -65,6 +65,7 @@ public class GenericTokenParser {
             builder.append(src, offset, start - offset);//添加openToken前offset后位置的字符到bulider中
             offset = start + openToken.length();//重设offset
             String content = new String(src, offset, end - offset);//获取openToken和endToken位置间的字符串
+            //关键是这句，调用了handler.handleToken()方法  
             builder.append(handler.handleToken(content));//调用handler进行处理
             offset = end + closeToken.length();//重设offset
           }

@@ -303,6 +303,7 @@ public final class MappedStatement {
    * @return
    */
   public BoundSql getBoundSql(Object parameterObject) {
+	//通过sqlSource对象获取
     BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     if (parameterMappings == null || parameterMappings.isEmpty()) {

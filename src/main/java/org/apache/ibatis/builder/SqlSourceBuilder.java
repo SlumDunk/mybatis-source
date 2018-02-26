@@ -33,104 +33,118 @@ import org.apache.ibatis.type.JdbcType;
  */
 public class SqlSourceBuilder extends BaseBuilder {
 
-  private static final String parameterProperties = "javaType,jdbcType,mode,numericScale,resultMap,typeHandler,jdbcTypeName";
+	private static final String parameterProperties = "javaType,jdbcType,mode,numericScale,resultMap,typeHandler,jdbcTypeName";
 
-  public SqlSourceBuilder(Configuration configuration) {
-    super(configuration);
-  }
+	public SqlSourceBuilder(Configuration configuration) {
+		super(configuration);
+	}
 
-  public SqlSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
-    ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType, additionalParameters);
-    GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
-    String sql = parser.parse(originalSql);
-    return new StaticSqlSource(configuration, sql, handler.getParameterMappings());
-  }
+	public SqlSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
+		// 处理占位符的handler
+		ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType,
+				additionalParameters);
+		// 要处理什么样的占位符
+		GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
+		// 开始处理
+		String sql = parser.parse(originalSql);
+		// 这个SqlSource就是一个简单的java对象
+		return new StaticSqlSource(configuration, sql, handler.getParameterMappings());
+	}
 
-  private static class ParameterMappingTokenHandler extends BaseBuilder implements TokenHandler {
+	private static class ParameterMappingTokenHandler extends BaseBuilder implements TokenHandler {
 
-    private List<ParameterMapping> parameterMappings = new ArrayList<ParameterMapping>();
-    private Class<?> parameterType;
-    private MetaObject metaParameters;
+		private List<ParameterMapping> parameterMappings = new ArrayList<ParameterMapping>();
+		private Class<?> parameterType;
+		private MetaObject metaParameters;
 
-    public ParameterMappingTokenHandler(Configuration configuration, Class<?> parameterType, Map<String, Object> additionalParameters) {
-      super(configuration);
-      this.parameterType = parameterType;
-      this.metaParameters = configuration.newMetaObject(additionalParameters);
-    }
+		public ParameterMappingTokenHandler(Configuration configuration, Class<?> parameterType,
+				Map<String, Object> additionalParameters) {
+			super(configuration);
+			this.parameterType = parameterType;
+			this.metaParameters = configuration.newMetaObject(additionalParameters);
+		}
 
-    public List<ParameterMapping> getParameterMappings() {
-      return parameterMappings;
-    }
+		public List<ParameterMapping> getParameterMappings() {
+			return parameterMappings;
+		}
 
-    public String handleToken(String content) {
-      parameterMappings.add(buildParameterMapping(content));
-      return "?";
-    }
+		public String handleToken(String content) {
+			// 从参数中获取具体的值，并加入parameterMappings中
+			parameterMappings.add(buildParameterMapping(content));
+			// 直接替换成一个"?"
+			// 这里可以看到有多少个"#{}"占位符，就会生成对应个"?",同时还会生成对应的parameterMappings
+			return "?";
+		}
 
-    private ParameterMapping buildParameterMapping(String content) {
-      Map<String, String> propertiesMap = parseParameterMapping(content);
-      String property = propertiesMap.get("property");
-      Class<?> propertyType;
-      if (metaParameters.hasGetter(property)) { // issue #448 get type from additional params
-        propertyType = metaParameters.getGetterType(property);
-      } else if (typeHandlerRegistry.hasTypeHandler(parameterType)) {
-        propertyType = parameterType;
-      } else if (JdbcType.CURSOR.name().equals(propertiesMap.get("jdbcType"))) {
-        propertyType = java.sql.ResultSet.class;
-      } else if (property != null) {
-        MetaClass metaClass = MetaClass.forClass(parameterType, configuration.getReflectorFactory());
-        if (metaClass.hasGetter(property)) {
-          propertyType = metaClass.getGetterType(property);
-        } else {
-          propertyType = Object.class;
-        }
-      } else {
-        propertyType = Object.class;
-      }
-      ParameterMapping.Builder builder = new ParameterMapping.Builder(configuration, property, propertyType);
-      Class<?> javaType = propertyType;
-      String typeHandlerAlias = null;
-      for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
-        String name = entry.getKey();
-        String value = entry.getValue();
-        if ("javaType".equals(name)) {
-          javaType = resolveClass(value);
-          builder.javaType(javaType);
-        } else if ("jdbcType".equals(name)) {
-          builder.jdbcType(resolveJdbcType(value));
-        } else if ("mode".equals(name)) {
-          builder.mode(resolveParameterMode(value));
-        } else if ("numericScale".equals(name)) {
-          builder.numericScale(Integer.valueOf(value));
-        } else if ("resultMap".equals(name)) {
-          builder.resultMapId(value);
-        } else if ("typeHandler".equals(name)) {
-          typeHandlerAlias = value;
-        } else if ("jdbcTypeName".equals(name)) {
-          builder.jdbcTypeName(value);
-        } else if ("property".equals(name)) {
-          // Do Nothing
-        } else if ("expression".equals(name)) {
-          throw new BuilderException("Expression based parameters are not supported yet");
-        } else {
-          throw new BuilderException("An invalid property '" + name + "' was found in mapping #{" + content + "}.  Valid properties are " + parameterProperties);
-        }
-      }
-      if (typeHandlerAlias != null) {
-        builder.typeHandler(resolveTypeHandler(javaType, typeHandlerAlias));
-      }
-      return builder.build();
-    }
+		private ParameterMapping buildParameterMapping(String content) {
+			// 这里content可以是这样子的:#{height,javaType=double,jdbcType=NUMERIC,numericScale=2}
+			// parseParameterMapping()就是把这种复杂的复杂解析成Map方式
+			Map<String, String> propertiesMap = parseParameterMapping(content);
+			String property = propertiesMap.get("property");
+			Class<?> propertyType;
+			if (metaParameters.hasGetter(property)) { // issue #448 get type from additional params
+				propertyType = metaParameters.getGetterType(property);
+			} else if (typeHandlerRegistry.hasTypeHandler(parameterType)) {
+				propertyType = parameterType;
+			} else if (JdbcType.CURSOR.name().equals(propertiesMap.get("jdbcType"))) {
+				propertyType = java.sql.ResultSet.class;
+			} else if (property != null) {
+				MetaClass metaClass = MetaClass.forClass(parameterType, configuration.getReflectorFactory());
+				if (metaClass.hasGetter(property)) {
+					propertyType = metaClass.getGetterType(property);
+				} else {
+					propertyType = Object.class;
+				}
+			} else {
+				propertyType = Object.class;
+			}
+			// 构建一个ParameterMapping对象，ParameterMapping描述的是java对象的属性与sql执行参数的对应关系。跟ResultMapping对象差不多
+			ParameterMapping.Builder builder = new ParameterMapping.Builder(configuration, property, propertyType);
+			Class<?> javaType = propertyType;
+			String typeHandlerAlias = null;
+			for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
+				String name = entry.getKey();
+				String value = entry.getValue();
+				if ("javaType".equals(name)) {
+					javaType = resolveClass(value);
+					builder.javaType(javaType);
+				} else if ("jdbcType".equals(name)) {
+					builder.jdbcType(resolveJdbcType(value));
+				} else if ("mode".equals(name)) {
+					builder.mode(resolveParameterMode(value));
+				} else if ("numericScale".equals(name)) {
+					builder.numericScale(Integer.valueOf(value));
+				} else if ("resultMap".equals(name)) {
+					builder.resultMapId(value);
+				} else if ("typeHandler".equals(name)) {
+					typeHandlerAlias = value;
+				} else if ("jdbcTypeName".equals(name)) {
+					builder.jdbcTypeName(value);
+				} else if ("property".equals(name)) {
+					// Do Nothing
+				} else if ("expression".equals(name)) {
+					throw new BuilderException("Expression based parameters are not supported yet");
+				} else {
+					throw new BuilderException("An invalid property '" + name + "' was found in mapping #{" + content
+							+ "}.  Valid properties are " + parameterProperties);
+				}
+			}
+			if (typeHandlerAlias != null) {
+				builder.typeHandler(resolveTypeHandler(javaType, typeHandlerAlias));
+			}
+			return builder.build();
+		}
 
-    private Map<String, String> parseParameterMapping(String content) {
-      try {
-        return new ParameterExpression(content);
-      } catch (BuilderException ex) {
-        throw ex;
-      } catch (Exception ex) {
-        throw new BuilderException("Parsing error was found in mapping #{" + content + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
-      }
-    }
-  }
+		private Map<String, String> parseParameterMapping(String content) {
+			try {
+				return new ParameterExpression(content);
+			} catch (BuilderException ex) {
+				throw ex;
+			} catch (Exception ex) {
+				throw new BuilderException("Parsing error was found in mapping #{" + content
+						+ "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
+			}
+		}
+	}
 
 }

@@ -114,6 +114,7 @@ public abstract class BaseExecutor implements Executor {
       throw new ExecutorException("Executor was closed.");
     }
     clearLocalCache();
+    //调用了doUpdate方法完成更新，这个方法是抽象的，由子类实现 
     return doUpdate(ms, parameter);
   }
 
@@ -344,7 +345,7 @@ public abstract class BaseExecutor implements Executor {
     List<E> list;
     localCache.putObject(key, EXECUTION_PLACEHOLDER);
     try {
-      //4. 执行查询，返回List 结果，然后将查询的结果放入缓存之中
+      //4. 执行查询，返回List 结果，然后将查询的结果放入缓存之中，调用doQuery方法，这个方法也是抽象的 
       list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     } finally {
       localCache.removeObject(key);

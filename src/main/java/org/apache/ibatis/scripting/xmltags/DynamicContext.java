@@ -31,108 +31,115 @@ import org.apache.ibatis.session.Configuration;
  */
 public class DynamicContext {
 
-  public static final String PARAMETER_OBJECT_KEY = "_parameter";
-  public static final String DATABASE_ID_KEY = "_databaseId";
+	public static final String PARAMETER_OBJECT_KEY = "_parameter";
+	public static final String DATABASE_ID_KEY = "_databaseId";
 
-  static {
-    OgnlRuntime.setPropertyAccessor(ContextMap.class, new ContextAccessor());
-  }
+	static {
+		OgnlRuntime.setPropertyAccessor(ContextMap.class, new ContextAccessor());
+	}
+	/**
+	 * 参数上下文，ContextMap为一个Map
+	 */
+	private final ContextMap bindings;
+	/**
+	 * sql,sqlNode中的apply()方法调用了appendSql(text)方法，最终会将sql保存在这个属性中  
+	 */
+	private final StringBuilder sqlBuilder = new StringBuilder();
+	private int uniqueNumber = 0;
 
-  private final ContextMap bindings;
-  private final StringBuilder sqlBuilder = new StringBuilder();
-  private int uniqueNumber = 0;
+	public DynamicContext(Configuration configuration, Object parameterObject) {
+		if (parameterObject != null && !(parameterObject instanceof Map)) {
+			MetaObject metaObject = configuration.newMetaObject(parameterObject);
+			bindings = new ContextMap(metaObject);
+		} else {
+			bindings = new ContextMap(null);
+		}
+		bindings.put(PARAMETER_OBJECT_KEY, parameterObject);
+		bindings.put(DATABASE_ID_KEY, configuration.getDatabaseId());
+	}
 
-  public DynamicContext(Configuration configuration, Object parameterObject) {
-    if (parameterObject != null && !(parameterObject instanceof Map)) {
-      MetaObject metaObject = configuration.newMetaObject(parameterObject);
-      bindings = new ContextMap(metaObject);
-    } else {
-      bindings = new ContextMap(null);
-    }
-    bindings.put(PARAMETER_OBJECT_KEY, parameterObject);
-    bindings.put(DATABASE_ID_KEY, configuration.getDatabaseId());
-  }
+	public Map<String, Object> getBindings() {
+		return bindings;
+	}
 
-  public Map<String, Object> getBindings() {
-    return bindings;
-  }
+	public void bind(String name, Object value) {
+		bindings.put(name, value);
+	}
 
-  public void bind(String name, Object value) {
-    bindings.put(name, value);
-  }
+	public void appendSql(String sql) {
+		sqlBuilder.append(sql);
+		sqlBuilder.append(" ");
+	}
 
-  public void appendSql(String sql) {
-    sqlBuilder.append(sql);
-    sqlBuilder.append(" ");
-  }
+	public String getSql() {
+		return sqlBuilder.toString().trim();
+	}
 
-  public String getSql() {
-    return sqlBuilder.toString().trim();
-  }
+	public int getUniqueNumber() {
+		return uniqueNumber++;
+	}
 
-  public int getUniqueNumber() {
-    return uniqueNumber++;
-  }
+	static class ContextMap extends HashMap<String, Object> {
+		private static final long serialVersionUID = 2977601501966151582L;
+		/**
+		 * 这个对运行时的参数进行了包装  
+		 */
+		private MetaObject parameterMetaObject;
 
-  static class ContextMap extends HashMap<String, Object> {
-    private static final long serialVersionUID = 2977601501966151582L;
+		public ContextMap(MetaObject parameterMetaObject) {
+			this.parameterMetaObject = parameterMetaObject;
+		}
 
-    private MetaObject parameterMetaObject;
-    public ContextMap(MetaObject parameterMetaObject) {
-      this.parameterMetaObject = parameterMetaObject;
-    }
+		@Override
+		public Object get(Object key) {
+			String strKey = (String) key;
+			//从自身map里找
+			if (super.containsKey(strKey)) {
+				return super.get(strKey);
+			}
+			//从参数里找
+			if (parameterMetaObject != null) {
+				// issue #61 do not modify the context when reading
+				return parameterMetaObject.getValue(strKey);
+			}
 
-    @Override
-    public Object get(Object key) {
-      String strKey = (String) key;
-      if (super.containsKey(strKey)) {
-        return super.get(strKey);
-      }
+			return null;
+		}
+	}
 
-      if (parameterMetaObject != null) {
-        // issue #61 do not modify the context when reading
-        return parameterMetaObject.getValue(strKey);
-      }
+	static class ContextAccessor implements PropertyAccessor {
 
-      return null;
-    }
-  }
+		@Override
+		public Object getProperty(Map context, Object target, Object name) throws OgnlException {
+			Map map = (Map) target;
 
-  static class ContextAccessor implements PropertyAccessor {
+			Object result = map.get(name);
+			if (map.containsKey(name) || result != null) {
+				return result;
+			}
 
-    @Override
-    public Object getProperty(Map context, Object target, Object name)
-        throws OgnlException {
-      Map map = (Map) target;
+			Object parameterObject = map.get(PARAMETER_OBJECT_KEY);
+			if (parameterObject instanceof Map) {
+				return ((Map) parameterObject).get(name);
+			}
 
-      Object result = map.get(name);
-      if (map.containsKey(name) || result != null) {
-        return result;
-      }
+			return null;
+		}
 
-      Object parameterObject = map.get(PARAMETER_OBJECT_KEY);
-      if (parameterObject instanceof Map) {
-        return ((Map)parameterObject).get(name);
-      }
+		@Override
+		public void setProperty(Map context, Object target, Object name, Object value) throws OgnlException {
+			Map<Object, Object> map = (Map<Object, Object>) target;
+			map.put(name, value);
+		}
 
-      return null;
-    }
+		@Override
+		public String getSourceAccessor(OgnlContext arg0, Object arg1, Object arg2) {
+			return null;
+		}
 
-    @Override
-    public void setProperty(Map context, Object target, Object name, Object value)
-        throws OgnlException {
-      Map<Object, Object> map = (Map<Object, Object>) target;
-      map.put(name, value);
-    }
-
-    @Override
-    public String getSourceAccessor(OgnlContext arg0, Object arg1, Object arg2) {
-      return null;
-    }
-
-    @Override
-    public String getSourceSetter(OgnlContext arg0, Object arg1, Object arg2) {
-      return null;
-    }
-  }
+		@Override
+		public String getSourceSetter(OgnlContext arg0, Object arg1, Object arg2) {
+			return null;
+		}
+	}
 }

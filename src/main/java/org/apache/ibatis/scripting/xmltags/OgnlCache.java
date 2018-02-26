@@ -38,7 +38,8 @@ public final class OgnlCache {
     // Prevent Instantiation of Static Class
   }
 
-  public static Object getValue(String expression, Object root) {
+  @SuppressWarnings("deprecation")
+public static Object getValue(String expression, Object root) {
     try {
       Map<Object, OgnlClassResolver> context = Ognl.createDefaultContext(root, new OgnlClassResolver());
       return Ognl.getValue(parseExpression(expression), context, root);

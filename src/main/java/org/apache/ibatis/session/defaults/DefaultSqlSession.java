@@ -110,6 +110,7 @@ public class DefaultSqlSession implements SqlSession {
 
   @Override
   public <E> List<E> selectList(String statement, Object parameter) {
+	//RowBounds表示查询的范围，一般在分页时用到
     return this.selectList(statement, parameter, RowBounds.DEFAULT);
   }
 

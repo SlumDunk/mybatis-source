@@ -27,26 +27,30 @@ import org.apache.ibatis.session.Configuration;
  */
 public class DynamicSqlSource implements SqlSource {
 
-  private Configuration configuration;
-  private SqlNode rootSqlNode;
+	private Configuration configuration;
+	private SqlNode rootSqlNode;
 
-  public DynamicSqlSource(Configuration configuration, SqlNode rootSqlNode) {
-    this.configuration = configuration;
-    this.rootSqlNode = rootSqlNode;
-  }
+	public DynamicSqlSource(Configuration configuration, SqlNode rootSqlNode) {
+		this.configuration = configuration;
+		this.rootSqlNode = rootSqlNode;
+	}
 
-  @Override
-  public BoundSql getBoundSql(Object parameterObject) {
-    DynamicContext context = new DynamicContext(configuration, parameterObject);
-    rootSqlNode.apply(context);
-    SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(configuration);
-    Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
-    SqlSource sqlSource = sqlSourceParser.parse(context.getSql(), parameterType, context.getBindings());
-    BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
-    for (Map.Entry<String, Object> entry : context.getBindings().entrySet()) {
-      boundSql.setAdditionalParameter(entry.getKey(), entry.getValue());
-    }
-    return boundSql;
-  }
+	@Override
+	public BoundSql getBoundSql(Object parameterObject) {
+		DynamicContext context = new DynamicContext(configuration, parameterObject);
+		// sqlNode使用组合模式实现，他有多个SqlNode对象
+		// 每个SqlNode的apply方法调用时，都为将sql加到context中，最终通过context.getSql()得到完整的sql
+		//这里只处理了"${}"占位符 
+		rootSqlNode.apply(context);
+		SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(configuration);
+		Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
+		//这里就是处理"#{}"占位符的地方
+		SqlSource sqlSource = sqlSourceParser.parse(context.getSql(), parameterType, context.getBindings());
+		BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
+		for (Map.Entry<String, Object> entry : context.getBindings().entrySet()) {
+			boundSql.setAdditionalParameter(entry.getKey(), entry.getValue());
+		}
+		return boundSql;
+	}
 
 }
