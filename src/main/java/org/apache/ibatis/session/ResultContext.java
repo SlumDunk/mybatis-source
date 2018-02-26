@@ -16,7 +16,7 @@
 package org.apache.ibatis.session;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public interface ResultContext<T> {
 

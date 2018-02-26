@@ -22,7 +22,7 @@ import org.apache.ibatis.parsing.TokenHandler;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class ForEachSqlNode implements SqlNode {
   public static final String ITEM_PREFIX = "__frch_";

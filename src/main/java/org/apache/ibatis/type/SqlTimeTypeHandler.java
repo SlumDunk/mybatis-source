@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class SqlTimeTypeHandler extends BaseTypeHandler<Time> {
 

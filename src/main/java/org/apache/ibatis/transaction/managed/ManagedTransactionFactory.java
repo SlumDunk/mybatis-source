@@ -30,7 +30,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
  * @see ManagedTransaction
  */
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class ManagedTransactionFactory implements TransactionFactory {
 

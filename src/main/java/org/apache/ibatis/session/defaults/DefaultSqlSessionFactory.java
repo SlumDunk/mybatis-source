@@ -32,7 +32,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.managed.ManagedTransactionFactory;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class DefaultSqlSessionFactory implements SqlSessionFactory {
 

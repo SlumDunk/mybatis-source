@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class JakartaCommonsLoggingImpl implements org.apache.ibatis.logging.Log {
 

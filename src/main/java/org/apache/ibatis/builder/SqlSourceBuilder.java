@@ -29,7 +29,7 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class SqlSourceBuilder extends BaseBuilder {
 

@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class InterceptorChain {
 

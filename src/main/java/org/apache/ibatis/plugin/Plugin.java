@@ -26,7 +26,7 @@ import java.util.Set;
 import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class Plugin implements InvocationHandler {
 

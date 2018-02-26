@@ -18,7 +18,7 @@ package org.apache.ibatis.parsing;
 import java.util.Properties;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class PropertyParser {
 

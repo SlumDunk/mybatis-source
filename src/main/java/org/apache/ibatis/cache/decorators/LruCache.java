@@ -24,7 +24,7 @@ import org.apache.ibatis.cache.Cache;
 /**
  * Lru (least recently used) cache decorator
  *
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class LruCache implements Cache {
 

@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class SimpleTypeRegistry {
 

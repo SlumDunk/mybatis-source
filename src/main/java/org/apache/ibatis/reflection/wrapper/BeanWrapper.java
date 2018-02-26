@@ -27,7 +27,7 @@ import org.apache.ibatis.reflection.invoker.Invoker;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class BeanWrapper extends BaseWrapper {
 

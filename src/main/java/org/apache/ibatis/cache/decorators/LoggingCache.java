@@ -22,7 +22,7 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class LoggingCache implements Cache {
 

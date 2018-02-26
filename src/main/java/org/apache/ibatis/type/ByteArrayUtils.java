@@ -16,7 +16,7 @@
 package org.apache.ibatis.type;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 class ByteArrayUtils {
 

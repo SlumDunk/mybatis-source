@@ -19,7 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class Invocation {
 

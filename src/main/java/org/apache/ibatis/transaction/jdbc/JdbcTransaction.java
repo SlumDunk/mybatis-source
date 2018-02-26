@@ -35,7 +35,7 @@ import org.apache.ibatis.transaction.TransactionException;
  * @see JdbcTransactionFactory
  */
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class JdbcTransaction implements Transaction {
 

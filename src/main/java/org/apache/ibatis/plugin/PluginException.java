@@ -18,7 +18,7 @@ package org.apache.ibatis.plugin;
 import org.apache.ibatis.exceptions.PersistenceException;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class PluginException extends PersistenceException {
 

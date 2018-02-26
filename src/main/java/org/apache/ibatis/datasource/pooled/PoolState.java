@@ -22,7 +22,7 @@ import java.util.List;
  * PooledDataSource将java.sql.Connection对象包裹成PooledConnection对象放到了PoolState类型的容器中维护。
  *  MyBatis将连接池中的PooledConnection分为两种状态： 空闲状态（idle）和活动状态(active)，
  *  这两种状态的PooledConnection对象分别被存储到PoolState容器内的idleConnections和activeConnections两个List集合中：
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class PoolState {
 

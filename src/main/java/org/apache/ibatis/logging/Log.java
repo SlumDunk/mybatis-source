@@ -16,7 +16,7 @@
 package org.apache.ibatis.logging;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public interface Log {
 

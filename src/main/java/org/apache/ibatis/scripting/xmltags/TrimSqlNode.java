@@ -25,7 +25,7 @@ import java.util.StringTokenizer;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class TrimSqlNode implements SqlNode {
 

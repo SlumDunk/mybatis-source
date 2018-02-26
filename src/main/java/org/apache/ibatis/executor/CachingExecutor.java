@@ -33,7 +33,7 @@ import org.apache.ibatis.transaction.Transaction;
 
 /**
  * 二级缓存与一级缓存其机制相同，默认也是采用 PerpetualCache，HashMap存储，不同在于其存储作用域为 Mapper(Namespace)，并且可自定义存储源
- * @author Clinton Begin
+ * @author liuzhongda
  * @author Eduardo Macarron
  */
 public class CachingExecutor implements Executor {

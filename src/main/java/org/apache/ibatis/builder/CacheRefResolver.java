@@ -18,7 +18,7 @@ package org.apache.ibatis.builder;
 import org.apache.ibatis.cache.Cache;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class CacheRefResolver {
   private final MapperBuilderAssistant assistant;

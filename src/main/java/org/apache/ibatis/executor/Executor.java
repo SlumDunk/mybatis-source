@@ -35,7 +35,7 @@ import org.apache.ibatis.transaction.Transaction;
  * 1、根据传递的参数，完成SQL语句的动态解析，生成BoundSql对象，供如StatementHandler使用；
  * 2、为查询创建缓存，以提高性能；
  * 3、创建JDBC的如Statement连接对象，传递给如StatementHandler对象，返回List查询结果。
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public interface Executor {
 

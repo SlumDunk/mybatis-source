@@ -21,7 +21,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
 
 /**
  * Builder模式应用2： 数据库连接环境Environment对象的创建
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public final class Environment {
   private final String id;

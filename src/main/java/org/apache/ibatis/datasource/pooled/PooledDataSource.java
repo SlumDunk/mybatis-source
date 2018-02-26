@@ -37,7 +37,7 @@ import org.apache.ibatis.logging.LogFactory;
  * PooledDataSource和UnpooledDataSource都实现了java.sql.DataSource接口。
  * 并且PooledDataSource需要创建java.sql.Connection实例对象时，还是通过UnpooledDataSource来创建。
  * PooledDataSource只是提供一种缓存连接池机制
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class PooledDataSource implements DataSource {
 

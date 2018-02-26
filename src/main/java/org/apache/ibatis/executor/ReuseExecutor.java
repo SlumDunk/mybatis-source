@@ -33,7 +33,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class ReuseExecutor extends BaseExecutor {
 

@@ -47,7 +47,7 @@ import org.apache.ibatis.type.JdbcType;
 /**
  * XMLConfigBuilder ：负责将mybatis-config.xml配置文件解析成Configuration对象，
  * 共SqlSessonFactoryBuilder使用，创建SqlSessionFactory
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class XMLConfigBuilder extends BaseBuilder {
 

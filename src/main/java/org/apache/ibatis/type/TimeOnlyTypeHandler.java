@@ -23,7 +23,7 @@ import java.sql.Time;
 import java.util.Date;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class TimeOnlyTypeHandler extends BaseTypeHandler<Date> {
 

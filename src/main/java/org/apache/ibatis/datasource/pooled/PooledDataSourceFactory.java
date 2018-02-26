@@ -18,7 +18,7 @@ package org.apache.ibatis.datasource.pooled;
 import org.apache.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
 

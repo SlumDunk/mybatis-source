@@ -41,7 +41,7 @@ import org.xml.sax.SAXParseException;
 
 /**
  * XpathParser的作用是提供根据Xpath表达式获取基本的DOM节点Node信息的操作
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class XPathParser {
 

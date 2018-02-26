@@ -31,7 +31,7 @@ import java.util.Set;
 import org.apache.ibatis.io.ResolverUtil;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public final class TypeHandlerRegistry {
 

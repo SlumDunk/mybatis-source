@@ -23,7 +23,7 @@ import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class DynamicSqlSource implements SqlSource {
 

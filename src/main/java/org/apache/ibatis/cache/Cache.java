@@ -50,7 +50,7 @@ import java.util.concurrent.locks.ReadWriteLock;
  * WeakCache 弱引用缓存，核心是WeakReference
  * TransactionalCache 事务缓存，一次性存入多个缓存，移除多个缓存
  *
- * @author Clinton Begin
+ * @author liuzhongda
  */
 
 public interface Cache {

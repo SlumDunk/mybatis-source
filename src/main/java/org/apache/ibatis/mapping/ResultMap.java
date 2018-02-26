@@ -25,7 +25,7 @@ import java.util.Set;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class ResultMap {
   private String id;

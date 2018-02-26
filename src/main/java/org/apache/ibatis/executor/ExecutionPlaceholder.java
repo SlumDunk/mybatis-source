@@ -16,7 +16,7 @@
 package org.apache.ibatis.executor;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public enum ExecutionPlaceholder {
   EXECUTION_PLACEHOLDER

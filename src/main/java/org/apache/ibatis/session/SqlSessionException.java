@@ -18,7 +18,7 @@ package org.apache.ibatis.session;
 import org.apache.ibatis.exceptions.PersistenceException;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class SqlSessionException extends PersistenceException {
 

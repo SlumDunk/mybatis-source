@@ -34,7 +34,7 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class XMLStatementBuilder extends BaseBuilder {
 

@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * 负责将JDBC返回的ResultSet结果集对象转换成List类型的集合
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public interface ResultSetHandler {
 

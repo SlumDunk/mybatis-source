@@ -18,7 +18,7 @@ package org.apache.ibatis.logging.stdout;
 import org.apache.ibatis.logging.Log;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class StdOutImpl implements Log {
 

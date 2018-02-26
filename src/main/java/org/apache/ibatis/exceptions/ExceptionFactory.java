@@ -18,7 +18,7 @@ package org.apache.ibatis.exceptions;
 import org.apache.ibatis.executor.ErrorContext;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class ExceptionFactory {
 

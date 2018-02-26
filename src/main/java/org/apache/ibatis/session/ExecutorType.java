@@ -20,7 +20,7 @@ package org.apache.ibatis.session;
  * SIMPLE 执行器执行其它语句。
  * REUSE 执行器可能重复使用prepared statements 语句。
  * BATCH执行器可以重复执行语句和批量更新。
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public enum ExecutorType {
   SIMPLE, REUSE, BATCH

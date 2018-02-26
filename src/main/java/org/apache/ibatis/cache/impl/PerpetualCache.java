@@ -24,7 +24,7 @@ import org.apache.ibatis.cache.CacheException;
 
 /**
  * 永久缓存，一旦存入就一直保持，内部就是一个HashMap,所有方法基本就是直接调用HashMap的方法
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class PerpetualCache implements Cache {
 

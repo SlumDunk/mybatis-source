@@ -19,7 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class SetFieldInvoker implements Invoker {
   private Field field;

@@ -33,7 +33,7 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  * @author Eduardo Macarron
  */
 public class DefaultParameterHandler implements ParameterHandler {

@@ -29,7 +29,7 @@ import org.apache.ibatis.logging.Log;
 /**
  * Base class for proxies to do logging
  * 
- * @author Clinton Begin
+ * @author liuzhongda
  * @author Eduardo Macarron
  */
 public abstract class BaseJdbcLogger {

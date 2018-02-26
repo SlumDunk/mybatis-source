@@ -91,7 +91,7 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * 所有的配置信息都维持在Configuration对象之中
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class Configuration {
 

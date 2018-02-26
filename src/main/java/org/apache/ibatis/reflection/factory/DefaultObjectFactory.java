@@ -31,7 +31,7 @@ import java.util.TreeSet;
 import org.apache.ibatis.reflection.ReflectionException;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class DefaultObjectFactory implements ObjectFactory, Serializable {
 

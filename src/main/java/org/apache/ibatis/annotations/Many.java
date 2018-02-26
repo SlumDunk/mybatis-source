@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import org.apache.ibatis.mapping.FetchType;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

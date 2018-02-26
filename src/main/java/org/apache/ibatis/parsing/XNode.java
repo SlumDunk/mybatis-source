@@ -28,7 +28,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * 该类是对org.w3c.dom.Node类的一个封装，在Node类的基础上添加了一些新功能
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class XNode {
 

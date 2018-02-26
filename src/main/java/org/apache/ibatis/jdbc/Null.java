@@ -38,7 +38,7 @@ import org.apache.ibatis.type.TimeOnlyTypeHandler;
 import org.apache.ibatis.type.TypeHandler;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  * @author Adam Gent
  */
 public enum Null {

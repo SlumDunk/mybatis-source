@@ -20,7 +20,7 @@ import java.sql.Connection;
 /**
  * Creates an {@link SqlSesion} out of a connection or a DataSource
  * SqlSessionFactory：SqlSession工厂类，以工厂形式创建SqlSession对象，采用了Factory工厂设计模式
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public interface SqlSessionFactory {
 

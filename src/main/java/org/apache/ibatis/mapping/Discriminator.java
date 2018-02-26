@@ -21,7 +21,7 @@ import java.util.Map;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class Discriminator {
 

@@ -19,7 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class ExceptionUtil {
 

@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public enum JdbcType {
   /*

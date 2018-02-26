@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.ibatis.builder.BuilderException;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class ExpressionEvaluator {
 

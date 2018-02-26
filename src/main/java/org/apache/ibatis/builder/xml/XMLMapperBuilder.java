@@ -49,7 +49,7 @@ import org.apache.ibatis.type.TypeHandler;
 
 /**
  * xml mapper解析
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class XMLMapperBuilder extends BaseBuilder {
 

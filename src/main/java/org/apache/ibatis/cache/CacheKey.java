@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class CacheKey implements Cloneable, Serializable {
 

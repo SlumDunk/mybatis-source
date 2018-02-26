@@ -30,7 +30,7 @@ import org.apache.ibatis.cache.CacheException;
 import org.apache.ibatis.io.Resources;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class SerializedCache implements Cache {
 

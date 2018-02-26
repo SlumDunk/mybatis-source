@@ -18,7 +18,7 @@ package org.apache.ibatis.executor.result;
 import org.apache.ibatis.session.ResultContext;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class DefaultResultContext<T> implements ResultContext<T> {
 

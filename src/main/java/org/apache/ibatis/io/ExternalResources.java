@@ -25,7 +25,7 @@ import java.nio.channels.FileChannel;
 import java.util.Properties;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class ExternalResources {
 

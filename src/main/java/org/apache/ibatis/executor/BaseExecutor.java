@@ -43,7 +43,7 @@ import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public abstract class BaseExecutor implements Executor {
 

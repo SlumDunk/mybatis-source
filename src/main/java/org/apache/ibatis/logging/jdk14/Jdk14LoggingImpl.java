@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 import org.apache.ibatis.logging.Log;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class Jdk14LoggingImpl implements Log {
 

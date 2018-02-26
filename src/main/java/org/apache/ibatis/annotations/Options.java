@@ -24,7 +24,7 @@ import org.apache.ibatis.mapping.ResultSetType;
 import org.apache.ibatis.mapping.StatementType;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

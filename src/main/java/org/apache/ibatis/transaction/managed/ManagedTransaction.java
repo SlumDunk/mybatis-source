@@ -38,7 +38,7 @@ import org.apache.ibatis.transaction.Transaction;
  * @see ManagedTransactionFactory
  */
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class ManagedTransaction implements Transaction {
 

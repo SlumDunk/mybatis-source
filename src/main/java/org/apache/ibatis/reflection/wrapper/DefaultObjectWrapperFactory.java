@@ -19,7 +19,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class DefaultObjectWrapperFactory implements ObjectWrapperFactory {
 

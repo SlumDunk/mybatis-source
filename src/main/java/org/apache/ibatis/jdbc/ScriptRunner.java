@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class ScriptRunner {
 

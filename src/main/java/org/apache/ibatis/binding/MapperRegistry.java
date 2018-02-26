@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  * @author Eduardo Macarron
  * @author Lasse Voss
  */

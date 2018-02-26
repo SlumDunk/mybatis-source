@@ -19,7 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.sql.*;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class BlobByteObjectArrayTypeHandler extends BaseTypeHandler<Byte[]> {
 

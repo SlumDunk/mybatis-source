@@ -18,7 +18,7 @@ package org.apache.ibatis.session;
 import java.sql.Connection;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public enum TransactionIsolationLevel {
   NONE(Connection.TRANSACTION_NONE),

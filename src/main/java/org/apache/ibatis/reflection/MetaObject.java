@@ -28,7 +28,9 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 
 /**
- * @author Clinton Begin
+ * 
+ * @author liuzhongda
+ *
  */
 public class MetaObject {
 

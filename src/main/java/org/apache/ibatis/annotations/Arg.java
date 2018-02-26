@@ -25,7 +25,7 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.UnknownTypeHandler;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

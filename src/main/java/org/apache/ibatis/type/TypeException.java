@@ -18,7 +18,7 @@ package org.apache.ibatis.type;
 import org.apache.ibatis.exceptions.PersistenceException;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class TypeException extends PersistenceException {
 

@@ -33,7 +33,7 @@ import org.apache.ibatis.logging.LogFactory;
  * Blocking cache support has been added. Therefore any get() that returns a cache miss 
  * will be followed by a put() so any lock associated with the key can be released. 
  * 
- * @author Clinton Begin
+ * @author liuzhongda
  * @author Eduardo Macarron
  */
 public class TransactionalCache implements Cache {

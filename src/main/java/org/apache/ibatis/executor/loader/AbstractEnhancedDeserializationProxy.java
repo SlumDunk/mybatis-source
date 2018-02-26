@@ -27,7 +27,7 @@ import org.apache.ibatis.reflection.property.PropertyCopier;
 import org.apache.ibatis.reflection.property.PropertyNamer;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public abstract class AbstractEnhancedDeserializationProxy {
 

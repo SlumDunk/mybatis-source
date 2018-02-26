@@ -25,7 +25,7 @@ import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class DefaultMapResultHandler<K, V> implements ResultHandler<V> {
 

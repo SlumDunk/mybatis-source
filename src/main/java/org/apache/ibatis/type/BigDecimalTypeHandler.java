@@ -22,7 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class BigDecimalTypeHandler extends BaseTypeHandler<BigDecimal> {
 

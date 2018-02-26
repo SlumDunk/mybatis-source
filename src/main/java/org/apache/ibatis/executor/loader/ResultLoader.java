@@ -35,7 +35,7 @@ import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.transaction.TransactionFactory;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class ResultLoader {
 

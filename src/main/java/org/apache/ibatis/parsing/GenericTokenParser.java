@@ -16,7 +16,7 @@
 package org.apache.ibatis.parsing;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  * 这个类是对常用Token进行parser的类
  */
 public class GenericTokenParser {

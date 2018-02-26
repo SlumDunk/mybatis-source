@@ -18,7 +18,7 @@ package org.apache.ibatis.mapping;
 import java.sql.ResultSet;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public enum ResultSetType {
   FORWARD_ONLY(ResultSet.TYPE_FORWARD_ONLY),

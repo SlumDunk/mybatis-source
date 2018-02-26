@@ -27,7 +27,7 @@ import org.apache.ibatis.reflection.ExceptionUtil;
 /**
  * Statement proxy to add logging
  * 
- * @author Clinton Begin
+ * @author liuzhongda
  * @author Eduardo Macarron
  * 
  */

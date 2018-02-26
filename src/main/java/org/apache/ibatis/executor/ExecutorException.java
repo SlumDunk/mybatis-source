@@ -18,7 +18,7 @@ package org.apache.ibatis.executor;
 import org.apache.ibatis.exceptions.PersistenceException;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class ExecutorException extends PersistenceException {
 

@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  */
 public class DateOnlyTypeHandler extends BaseTypeHandler<Date> {
 

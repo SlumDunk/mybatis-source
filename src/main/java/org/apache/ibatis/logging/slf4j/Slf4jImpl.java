@@ -22,7 +22,7 @@ import org.slf4j.Marker;
 import org.slf4j.spi.LocationAwareLogger;
 
 /**
- * @author Clinton Begin
+ * @author liuzhongda
  * @author Eduardo Macarron
  */
 public class Slf4jImpl implements Log {
