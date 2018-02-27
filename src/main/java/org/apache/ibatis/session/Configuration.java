@@ -686,6 +686,7 @@ public class Configuration {
   }
 
   public <T> void addMapper(Class<T> type) {
+	//最终是由MapperRegistry对象来完成加载的
     mapperRegistry.addMapper(type);
   }
 

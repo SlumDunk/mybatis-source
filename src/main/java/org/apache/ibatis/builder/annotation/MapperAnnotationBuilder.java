@@ -115,11 +115,14 @@ public class MapperAnnotationBuilder {
   public void parse() {
     String resource = type.toString();
     if (!configuration.isResourceLoaded(resource)) {
+    	  //这里会先去加载相对应的mapper.xml配置文件  
+      //也就是说解析UserDao注解时，如果发现有UserDao.xml配置文件会先加载UesrDao.xml配置文件  
       loadXmlResource();
       configuration.addLoadedResource(resource);
       assistant.setCurrentNamespace(type.getName());
       parseCache();
       parseCacheRef();
+      //获取class中所有的方法 
       Method[] methods = type.getMethods();
       for (Method method : methods) {
         try {
@@ -248,26 +251,37 @@ public class MapperAnnotationBuilder {
     }
     return null;
   }
-
+  /**
+   * 这个方法的功能就是读取方法的注解，生成一个MappedStatement对象，然后加入到Configuration中  
+   * @param method
+   */
   void parseStatement(Method method) {
     Class<?> parameterTypeClass = getParameterType(method);
     LanguageDriver languageDriver = getLanguageDriver(method);
+    //从注解中获取一个SqlSource,之前已经分析过MappedStatement对应一个SqlSource对象，表示配置的Sql
     SqlSource sqlSource = getSqlSourceFromAnnotations(method, parameterTypeClass, languageDriver);
+    //如果sqlSource为空，这个方法将直接返回  
     if (sqlSource != null) {
+    	  //读取方法中的Options注解 
       Options options = method.getAnnotation(Options.class);
+      //注意这个mappedStatementId的生成规则，Mybatis生成的Mapper代理对象也是根据这个规则来生成一个mappedStatementId，再去Configuration中加载MappedStatement的
       final String mappedStatementId = type.getName() + "." + method.getName();
       Integer fetchSize = null;
       Integer timeout = null;
       StatementType statementType = StatementType.PREPARED;
       ResultSetType resultSetType = ResultSetType.FORWARD_ONLY;
       SqlCommandType sqlCommandType = getSqlCommandType(method);
-      boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+      boolean isSelect = sqlCommandType == SqlCommandType.SELECT; 
+      //这两个是设置二级缓存的，如果没有设置options注解，将使用如下默认值  
+      //如果是update/insert/delete语句，就行里就会刷新缓存,select语句则不刷新  
+      //如果是select语句是默认使用缓存的  
       boolean flushCache = !isSelect;
       boolean useCache = isSelect;
 
       KeyGenerator keyGenerator;
       String keyProperty = "id";
       String keyColumn = null;
+      //自动生成主键，一般在应用中比较少用
       if (SqlCommandType.INSERT.equals(sqlCommandType) || SqlCommandType.UPDATE.equals(sqlCommandType)) {
         // first check for SelectKey annotation - that overrides everything else
         SelectKey selectKey = method.getAnnotation(SelectKey.class);
@@ -295,6 +309,7 @@ public class MapperAnnotationBuilder {
       }
 
       String resultMapId = null;
+      //获取对应的resultMap,还可以配置多个，用","分隔  
       ResultMap resultMapAnnotation = method.getAnnotation(ResultMap.class);
       if (resultMapAnnotation != null) {
         String[] resultMaps = resultMapAnnotation.value();
@@ -307,9 +322,10 @@ public class MapperAnnotationBuilder {
         }
         resultMapId = sb.toString();
       } else if (isSelect) {
+    	  	//如果没有配置resultMap，自动生成一个加入到Configuration中，就像Mapper.xml配置文件中只配置了resultType属性那样 
         resultMapId = parseResultMap(method);
       }
-
+      //这里跟加载mapper.xml配置文件中一样，交由助手去生成一个MappedStatement并加入到Configuration中
       assistant.addMappedStatement(
           mappedStatementId,
           sqlSource,
@@ -411,14 +427,19 @@ public class MapperAnnotationBuilder {
 
   private SqlSource getSqlSourceFromAnnotations(Method method, Class<?> parameterType, LanguageDriver languageDriver) {
     try {
+    	  //获取方法的注解，Select/Update/Insert/Delete中的一种  
       Class<? extends Annotation> sqlAnnotationType = getSqlAnnotationType(method);
+      //获取方法的注解，SelectProvider/UpdateProvider/InsertProvider/DeleteProvider中的一种
       Class<? extends Annotation> sqlProviderAnnotationType = getSqlProviderAnnotationType(method);
       if (sqlAnnotationType != null) {
         if (sqlProviderAnnotationType != null) {
+        	 //不支持两种注解同时存在  
           throw new BindingException("You cannot supply both a static SQL and SqlProvider to method named " + method.getName());
         }
         Annotation sqlAnnotation = method.getAnnotation(sqlAnnotationType);
+        //直接读取Select/Update/Insert/Delete中的sql内容 
         final String[] strings = (String[]) sqlAnnotation.getClass().getMethod("value").invoke(sqlAnnotation);
+        //通过sql创建一个SqlSource
         return buildSqlSourceFromStrings(strings, parameterType, languageDriver);
       } else if (sqlProviderAnnotationType != null) {
         Annotation sqlProviderAnnotation = method.getAnnotation(sqlProviderAnnotationType);

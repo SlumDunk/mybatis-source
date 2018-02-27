@@ -26,12 +26,21 @@ import java.util.Set;
 import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
+ * Plugin实现了JDK动态代理中的InvocationHandler 
  * @author liuzhongda
  */
 public class Plugin implements InvocationHandler {
-
+/**
+ * 被代理的原始对象  
+ */
   private Object target;
+  /**
+   * 拦截器
+   */
   private Interceptor interceptor;
+  /**
+   * 这里定义了拦截器对原始对象的那些方法有效 
+   */
   private Map<Class<?>, Set<Method>> signatureMap;
 
   private Plugin(Object target, Interceptor interceptor, Map<Class<?>, Set<Method>> signatureMap) {
@@ -41,10 +50,13 @@ public class Plugin implements InvocationHandler {
   }
 
   public static Object wrap(Object target, Interceptor interceptor) {
+	//对拦截器中取出方法签名,是通过注解来声明需要拦截的方法签名的
     Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
     Class<?> type = target.getClass();
+    //获取被代理/拦截的对象实现的所有接口  
     Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
     if (interfaces.length > 0) {
+    	  //这里最终还是用了JDK的动态代理，如果被代理/拦截的对象没有实现任何接口，JDK将无法代理。 
       return Proxy.newProxyInstance(
           type.getClassLoader(),
           interfaces,
@@ -58,14 +70,20 @@ public class Plugin implements InvocationHandler {
     try {
       Set<Method> methods = signatureMap.get(method.getDeclaringClass());
       if (methods != null && methods.contains(method)) {
+    	  	//这里方法在signatureMap中，需要拦截。调用interceptor.intercept()方法,注意这个target已经是原始对象了  
         return interceptor.intercept(new Invocation(target, method, args));
       }
+      //不需要拦截，直接执行  
       return method.invoke(target, args);
     } catch (Exception e) {
       throw ExceptionUtil.unwrapThrowable(e);
     }
   }
-
+  /**
+   * 从注解中读取方法签名  
+   * @param interceptor
+   * @return
+   */
   private static Map<Class<?>, Set<Method>> getSignatureMap(Interceptor interceptor) {
     Intercepts interceptsAnnotation = interceptor.getClass().getAnnotation(Intercepts.class);
     // issue #251

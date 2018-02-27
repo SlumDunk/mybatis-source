@@ -415,6 +415,7 @@ public class XMLConfigBuilder extends BaseBuilder {
             //4.<mapper class="org.mybatis.builder.AuthorMapper"/> Using mapper interface classes
           } else if (resource == null && url == null && mapperClass != null) {
             Class<?> mapperInterface = Resources.classForName(mapperClass);
+            //指定class的方式
             configuration.addMapper(mapperInterface);
           } else {
             throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");

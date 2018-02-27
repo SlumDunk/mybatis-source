@@ -21,11 +21,28 @@ import java.util.Properties;
  * @author liuzhongda
  */
 public interface Interceptor {
+	/**
+	 * jdk动态代码中的InvocationHandler.invoke()方法执行里，这个方法会被调用
+	 * 
+	 * @param invocation
+	 * @return
+	 * @throws Throwable
+	 */
+	Object intercept(Invocation invocation) throws Throwable;
 
-  Object intercept(Invocation invocation) throws Throwable;
+	/**
+	 * 生成一个代理对象
+	 * 
+	 * @param target
+	 * @return
+	 */
+	Object plugin(Object target);
 
-  Object plugin(Object target);
-
-  void setProperties(Properties properties);
+	/**
+	 * 设置属性
+	 * 
+	 * @param properties
+	 */
+	void setProperties(Properties properties);
 
 }

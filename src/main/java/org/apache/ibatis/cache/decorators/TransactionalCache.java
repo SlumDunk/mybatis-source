@@ -28,115 +28,127 @@ import org.apache.ibatis.logging.LogFactory;
 /**
  * The 2nd level cache transactional buffer.
  * 
- * This class holds all cache entries that are to be added to the 2nd level cache during a Session.
- * Entries are sent to the cache when commit is called or discarded if the Session is rolled back. 
- * Blocking cache support has been added. Therefore any get() that returns a cache miss 
- * will be followed by a put() so any lock associated with the key can be released. 
+ * This class holds all cache entries that are to be added to the 2nd level
+ * cache during a Session. Entries are sent to the cache when commit is called
+ * or discarded if the Session is rolled back. Blocking cache support has been
+ * added. Therefore any get() that returns a cache miss will be followed by a
+ * put() so any lock associated with the key can be released.
  * 
  * @author liuzhongda
  * @author Eduardo Macarron
  */
 public class TransactionalCache implements Cache {
 
-  private static final Log log = LogFactory.getLog(TransactionalCache.class);
+	private static final Log log = LogFactory.getLog(TransactionalCache.class);
 
-  private Cache delegate;
-  private boolean clearOnCommit;
-  private Map<Object, Object> entriesToAddOnCommit;
-  private Set<Object> entriesMissedInCache;
+	private Cache delegate;
+	/**
+	 * 这个对象如果被设置为true，commit时Cache会先清除所有的数据
+	 */
+	private boolean clearOnCommit;
+	/**
+	 * 临时区域，提交时需要将数据刷新对Cache
+	 */
+	private Map<Object, Object> entriesToAddOnCommit;
+	/**
+	 * 缺失value的键值key集合
+	 */
+	private Set<Object> entriesMissedInCache;
 
-  public TransactionalCache(Cache delegate) {
-    this.delegate = delegate;
-    this.clearOnCommit = false;
-    this.entriesToAddOnCommit = new HashMap<Object, Object>();
-    this.entriesMissedInCache = new HashSet<Object>();
-  }
+	public TransactionalCache(Cache delegate) {
+		this.delegate = delegate;
+		this.clearOnCommit = false;
+		this.entriesToAddOnCommit = new HashMap<Object, Object>();
+		this.entriesMissedInCache = new HashSet<Object>();
+	}
 
-  
-  public String getId() {
-    return delegate.getId();
-  }
+	public String getId() {
+		return delegate.getId();
+	}
 
-  
-  public int getSize() {
-    return delegate.getSize();
-  }
+	public int getSize() {
+		return delegate.getSize();
+	}
 
-  
-  public Object getObject(Object key) {
-    // issue #116
-    Object object = delegate.getObject(key);
-    if (object == null) {
-      entriesMissedInCache.add(key);
-    }
-    // issue #146
-    if (clearOnCommit) {
-      return null;
-    } else {
-      return object;
-    }
-  }
+	public Object getObject(Object key) {
+		// issue #116
+		Object object = delegate.getObject(key);
+		if (object == null) {
+			entriesMissedInCache.add(key);
+		}
+		// issue #146
+		if (clearOnCommit) {
+			return null;
+		} else {
+			return object;
+		}
+	}
 
-  
-  public ReadWriteLock getReadWriteLock() {
-    return null;
-  }
+	public ReadWriteLock getReadWriteLock() {
+		return null;
+	}
 
-  
-  public void putObject(Object key, Object object) {
-    entriesToAddOnCommit.put(key, object);
-  }
+	public void putObject(Object key, Object object) {
+		// 将数据放到临时区域，提交时再刷新到cache中
+		entriesToAddOnCommit.put(key, object);
+	}
 
-  
-  public Object removeObject(Object key) {
-    return null;
-  }
+	public Object removeObject(Object key) {
+		return null;
+	}
 
-  
-  public void clear() {
-    clearOnCommit = true;
-    entriesToAddOnCommit.clear();
-  }
+	public void clear() {
+		clearOnCommit = true;
+		entriesToAddOnCommit.clear();
+	}
 
-  public void commit() {
-    if (clearOnCommit) {
-      delegate.clear();
-    }
-    flushPendingEntries();
-    reset();
-  }
+	public void commit() {
+		if (clearOnCommit) {
+			// 先清除所有的数据
+			delegate.clear();
+		}
+		// 将数据刷新到cache
+		flushPendingEntries();
+		reset();
+	}
 
-  public void rollback() {
-    unlockMissedEntries();
-    reset();
-  }
+	public void rollback() {
+		/**
+		 * 清楚缺失value值为null的键值key集合
+		 */
+		unlockMissedEntries();
+		reset();
+	}
 
-  private void reset() {
-    clearOnCommit = false;
-    entriesToAddOnCommit.clear();
-    entriesMissedInCache.clear();
-  }
+	/**
+	 * 重置临时区域
+	 */
+	private void reset() {
+		clearOnCommit = false;
+		entriesToAddOnCommit.clear();
+		entriesMissedInCache.clear();
+	}
 
-  private void flushPendingEntries() {
-    for (Map.Entry<Object, Object> entry : entriesToAddOnCommit.entrySet()) {
-      delegate.putObject(entry.getKey(), entry.getValue());
-    }
-    for (Object entry : entriesMissedInCache) {
-      if (!entriesToAddOnCommit.containsKey(entry)) {
-        delegate.putObject(entry, null);
-      }
-    }
-  }
+	private void flushPendingEntries() {
+		for (Map.Entry<Object, Object> entry : entriesToAddOnCommit.entrySet()) {
+			delegate.putObject(entry.getKey(), entry.getValue());
+		}
+		for (Object entry : entriesMissedInCache) {
+			if (!entriesToAddOnCommit.containsKey(entry)) {
+				delegate.putObject(entry, null);
+			}
+		}
+	}
 
-  private void unlockMissedEntries() {
-    for (Object entry : entriesMissedInCache) {
-      try {
-        delegate.removeObject(entry);
-      } catch (Exception e) {
-        log.warn("Unexpected exception while notifiying a rollback to the cache adapter."
-            + "Consider upgrading your cache adapter to the latest version.  Cause: " + e);
-      }
-    }
-  }
+	private void unlockMissedEntries() {
+		for (Object entry : entriesMissedInCache) {
+			try {
+				delegate.removeObject(entry);
+			} catch (Exception e) {
+				log.warn("Unexpected exception while notifiying a rollback to the cache adapter."
+						+ "Consider upgrading your cache adapter to the latest version.  Cause: " + e);
+			}
+		}
+	}
 
 }

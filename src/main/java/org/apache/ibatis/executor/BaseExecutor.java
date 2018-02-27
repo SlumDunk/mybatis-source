@@ -64,7 +64,9 @@ public abstract class BaseExecutor implements Executor {
   protected BaseExecutor(Configuration configuration, Transaction transaction) {
     this.transaction = transaction;
     this.deferredLoads = new ConcurrentLinkedQueue<DeferredLoad>();
+    //创建一个缓存对象，PerpetualCache并不是线程安全的，但SqlSession和Executor对象在通常情况下只能有一个线程访问，而且访问完成之后马上销毁。
     this.localCache = new PerpetualCache("LocalCache");
+    //这是执行过程中的缓存
     this.localOutputParameterCache = new PerpetualCache("LocalOutputParameterCache");
     this.closed = false;
     this.configuration = configuration;
@@ -113,6 +115,7 @@ public abstract class BaseExecutor implements Executor {
     if (closed) {
       throw new ExecutorException("Executor was closed.");
     }
+    //每次执行update/insert/delete语句时都会清除一级缓存。
     clearLocalCache();
     //调用了doUpdate方法完成更新，这个方法是抽象的，由子类实现 
     return doUpdate(ms, parameter);
@@ -166,10 +169,10 @@ public abstract class BaseExecutor implements Executor {
       queryStack++;
       list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
       if (list != null) {
-    	 //从本地缓存（一级缓存）中读取数据（当服务器宕机后数据消失）
+    	  	//从本地缓存（一级缓存）中读取数据（当服务器宕机后数据消失）
         handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
       } else {
-    	//3.缓存中没有值，直接从数据库中读取数据
+    	  	//3.缓存中没有值，直接从数据库中读取数据
         list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
       }
     } finally {
@@ -183,6 +186,7 @@ public abstract class BaseExecutor implements Executor {
       deferredLoads.clear();
       if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
         // issue #482
+    	  	//如果配置为STATEMENT时，将清除所有缓存。说明STATEMENT类型的查询只有queryFromDatabase方法中有效
         clearLocalCache();
       }
     }
@@ -350,6 +354,7 @@ public abstract class BaseExecutor implements Executor {
     } finally {
       localCache.removeObject(key);
     }
+    //将缓存加入到localCache中
     localCache.putObject(key, list);
     if (ms.getStatementType() == StatementType.CALLABLE) {
       localOutputParameterCache.putObject(key, parameter);

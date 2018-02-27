@@ -72,6 +72,7 @@ public class CachingExecutor implements Executor {
 
   @Override
   public int update(MappedStatement ms, Object parameterObject) throws SQLException {
+	//如果需要刷新缓存的话就刷新：flushCache="true" 
     flushCacheIfRequired(ms);
     return delegate.update(ms, parameterObject);
   }
@@ -79,6 +80,7 @@ public class CachingExecutor implements Executor {
   @Override
   public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
     BoundSql boundSql = ms.getBoundSql(parameterObject);
+    //生成一个key
     CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
     return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
   }
@@ -86,15 +88,20 @@ public class CachingExecutor implements Executor {
   @Override
   public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
       throws SQLException {
+	//从MappedStatement获取一个Cache，如果对象的命名空间没有配置cache或cache-ref节点,cache将为空，表示不使用缓存  
     Cache cache = ms.getCache();
     if (cache != null) {
+    	  //如果需要刷新缓存的话就刷新：flushCache="true" 
       flushCacheIfRequired(ms);
       if (ms.isUseCache() && resultHandler == null) {
         ensureNoOutParams(ms, parameterObject, boundSql);
         @SuppressWarnings("unchecked")
+        //从Cache获取数据  
         List<E> list = (List<E>) tcm.getObject(cache, key);
         if (list == null) {
+        	  //如果缓存中没有，就执行SQL生成数据 
           list = delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+          //将数据加入到临时区域  
           tcm.putObject(cache, key, list); // issue #578 and #116
         }
         return list;
@@ -110,7 +117,9 @@ public class CachingExecutor implements Executor {
 
   @Override
   public void commit(boolean required) throws SQLException {
+	//提交数据库的事务  
     delegate.commit(required);
+    //将数据刷新到Cache中，使数据对其他的SqlSession也可见  
     tcm.commit();
   }
 
@@ -120,6 +129,7 @@ public class CachingExecutor implements Executor {
       delegate.rollback(required);
     } finally {
       if (required) {
+    	  	//清除临时的数据，不将数据刷新到Cache中
         tcm.rollback();
       }
     }

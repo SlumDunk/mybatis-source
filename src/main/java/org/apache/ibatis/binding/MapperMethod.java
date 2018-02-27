@@ -44,27 +44,41 @@ public class MapperMethod {
     this.command = new SqlCommand(config, mapperInterface, method);
     this.method = new MethodSignature(config, method);
   }
-
+  /**
+   * 所有Mapper接口中方法被调用里，都会执行这个方法.这里实际上是调用SqlSession中的相关方法,
+   * @param sqlSession
+   * @param args
+   * @return
+   */
   public Object execute(SqlSession sqlSession, Object[] args) {
     Object result;
+    //判断这个方法被注解里的Sql类型  
     if (SqlCommandType.INSERT == command.getType()) {
+    	  //执行insert
       Object param = method.convertArgsToSqlCommandParam(args);
       result = rowCountResult(sqlSession.insert(command.getName(), param));
     } else if (SqlCommandType.UPDATE == command.getType()) {
+    	  //执行update  
       Object param = method.convertArgsToSqlCommandParam(args);
       result = rowCountResult(sqlSession.update(command.getName(), param));
     } else if (SqlCommandType.DELETE == command.getType()) {
+    	  //执行delete
       Object param = method.convertArgsToSqlCommandParam(args);
       result = rowCountResult(sqlSession.delete(command.getName(), param));
     } else if (SqlCommandType.SELECT == command.getType()) {
+    	  //select ,查询
       if (method.returnsVoid() && method.hasResultHandler()) {
+    	  	//没有返回值，并且有ResultHandler的情况
         executeWithResultHandler(sqlSession, args);
         result = null;
       } else if (method.returnsMany()) {
+    	  	//返回一个List 
         result = executeForMany(sqlSession, args);
       } else if (method.returnsMap()) {
+    	  	//返回一个Map
         result = executeForMap(sqlSession, args);
       } else {
+    	  	//返回一个对象 
         Object param = method.convertArgsToSqlCommandParam(args);
         result = sqlSession.selectOne(command.getName(), param);
       }
