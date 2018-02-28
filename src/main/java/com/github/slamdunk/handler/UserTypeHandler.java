@@ -19,6 +19,11 @@ import com.github.slamdunk.enums.UserType;
 public class UserTypeHandler extends BaseTypeHandler<UserType> {
 	private Class<UserType> type;
 
+	public UserTypeHandler() {
+		super();
+		type=UserType.class;		
+	}
+	
 	public UserTypeHandler(Class<UserType> type) {
 		super();
 		this.type = type;

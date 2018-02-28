@@ -80,7 +80,7 @@ public class SimpleExecutor extends BaseExecutor {
     Statement stmt;
     //获取一个连接
     Connection connection = getConnection(statementLog);
-    //由StatementHandler从connection获取一个StatementHandler  
+    //由StatementHandler从connection获取一个Statement
     stmt = handler.prepare(connection);
     //对创建的Statement对象设置参数，即设置SQL 语句中 ? 设置为指定的参数
     handler.parameterize(stmt);

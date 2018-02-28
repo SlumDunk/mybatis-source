@@ -8,7 +8,7 @@ public class UserVO {
 	/**
 	 * user id, primary key
 	 */
-	private String id;
+	private int id;
 
 	private String username;
 
@@ -34,17 +34,17 @@ public class UserVO {
 	 */
 	private UserType type;
 
-	public UserVO(String id, String username) {
+	public UserVO(Integer id, String username) {
 		super();
 		this.id = id;
 		this.username = username;
 	}
 
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

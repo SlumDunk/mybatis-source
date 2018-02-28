@@ -4,9 +4,9 @@
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
-	
+
 	<properties resource="properties/db.properties"></properties>
-	
+
 	<settings>
 		<setting name="cacheEnabled" value="true" />
 		<setting name="lazyLoadingEnabled" value="true" />
@@ -24,6 +24,10 @@
 		<setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString" />
 	</settings>
 	
+	<typeHandlers>
+		<typeHandler handler="com.github.slamdunk.handler.UserTypeHandler" />
+	</typeHandlers>
+
 	<environments default="development">
 		<environment id="development">
 			<transactionManager type="JDBC"></transactionManager>
@@ -31,7 +35,7 @@
 				<property name="driver" value="${jdbc.driver}" />
 				<property name="url" value="${jdbc.url}" />
 				<property name="username" value="${jdbc.username}" />
-				<property name="password" value="${jdbc.password}" />
+				<property name="password" value="${jdbc.pwd}" />
 			</dataSource>
 		</environment>
 	</environments>

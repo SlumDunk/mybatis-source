@@ -26,8 +26,13 @@ public enum UserType {
 		return value;
 	}
 
-	public void setValue(int value) {
-		this.value = value;
+	public static UserType getUserType(int value) {
+		for (UserType userType : UserType.values()) {
+			if (userType.getValue() == value) {
+				return userType;
+			}
+		}
+		return null;
 	}
 
 }
